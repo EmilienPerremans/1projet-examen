@@ -1,0 +1,12 @@
+footer {
+    background-color: #f0f0f0; /* Couleur de fond du footer */
+    padding: 20px 0; /* Ajouter de l'espace autour du contenu du footer */
+    text-align: center; /* Aligner le texte au centre */
+    width: 100%; /* Largeur de 100% pour couvrir toute la largeur de la fenêtre */
+    position: fixed; /* Positionnement fixe */
+    bottom: 0; /* Positionné au bas de la fenêtre */
+}
+
+footer p {
+    margin: 0; /* Supprimer les marges par défaut du paragraphe à l'intérieur du footer */
+}
