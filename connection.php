@@ -1,89 +1,73 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription</title>
+    <title>Connexion</title>
 </head>
 <body>
-    <h1>Inscription</h1>
+    <h1>Connexion</h1>
+
     <?php
-    // Paramètres de connexion à la base de données
-    $serveur = "localhost:3306"; // ou l'adresse IP du serveur MySQL
-    $utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
-    $motDePasse = ""; // Remplacez par votre mot de passe MySQL
-    $baseDeDonnees = "php_christophe"; // Remplacez par le nom de votre base de données
-
-    // Connexion à la base de données
-    $connexion = mysqli_connect($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
-
-    // Vérification de la connexion
-    if (!$connexion) {
-        die("Échec de la connexion à la base de données : " . mysqli_connect_error());
+    // Fonction pour gérer les exceptions PDO
+    function gerer_exceptions(PDOException $e) {
+        echo "Erreur d'exécution de requête : " . $e->getMessage() . PHP_EOL;
     }
 
-    // Vérification du formulaire soumis
+    // Fonction pour établir la connexion à la base de données
+    function connexion_bdd() {
+        $serveur = "localhost"; // Adresse du serveur MySQL
+        $utilisateur = "root"; // Nom d'utilisateur MySQL
+        $motDePasse = ""; // Mot de passe MySQL
+        $baseDeDonnees = "php_christophe"; // Nom de la base de données
+
+        // Créer une nouvelle connexion PDO
+        $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);
+
+        // Définir le mode d'erreur sur "exception"
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
+    }
+
+    // Traitement du formulaire de connexion
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Vérification des champs requis
-        $errors = [];
-        if (empty($_POST["inscription_pseudo"])) {
-            $errors[] = "Le pseudo est requis.";
-        } elseif (strlen($_POST["inscription_pseudo"]) < 2 || strlen($_POST["inscription_pseudo"]) > 255) {
-            $errors[] = "Le pseudo doit contenir entre 2 et 255 caractères.";
-        }
+        // Récupérer les valeurs du formulaire
+        $pseudo = htmlspecialchars($_POST['connexion_pseudo']);
+        $motDePasse = $_POST['connexion_motDePasse'];
 
-        if (empty($_POST["inscription_email"])) {
-            $errors[] = "L'email est requis.";
-        }
+        try {
+            // Établir la connexion à la base de données
+            $pdo = connexion_bdd();
 
-        if (empty($_POST["inscription_motDePasse"]) || empty($_POST["inscription_motDePasse_confirmation"])) {
-            $errors[] = "Les deux champs de mot de passe sont requis.";
-        } elseif ($_POST["inscription_motDePasse"] !== $_POST["inscription_motDePasse_confirmation"]) {
-            $errors[] = "Les mots de passe ne correspondent pas.";
-        } elseif (strlen($_POST["inscription_motDePasse"]) < 8 || strlen($_POST["inscription_motDePasse"]) > 72) {
-            $errors[] = "Le mot de passe doit contenir entre 8 et 72 caractères.";
-        }
+            // Requête pour vérifier les informations de connexion
+            $requete = $pdo->prepare("SELECT * FROM t_utilisateur_uti WHERE uti_pseudo = ?");
+            $requete->execute([$pseudo]);
+            $utilisateur = $requete->fetch(PDO::FETCH_ASSOC);
 
-        // Si aucune erreur, traitement des données
-        if (empty($errors)) {
-            // Traitement des données d'inscription, par exemple, enregistrement dans une base de données
-            // Ici, vous pouvez utiliser $connexion pour exécuter vos requêtes SQL
-            // Redirection vers une page de confirmation ou de connexion
-            header("Location: connection.php");
-            exit();
-        } else {
-            // Affichage des erreurs
-            echo "<div>";
-            echo "<ul>";
-            foreach ($errors as $error) {
-                echo "<li>$error</li>";
+            // Vérifier si l'utilisateur existe et si le mot de passe correspond
+            if ($utilisateur && password_verify($motDePasse, $utilisateur['uti_motdepasse'])) {
+                echo "Connexion réussie pour l'utilisateur : " . $pseudo;
+                // Ici, vous pouvez rediriger l'utilisateur vers une page sécurisée
+            } else {
+                echo "Identifiants incorrects. Veuillez réessayer.";
             }
-            echo "</ul>";
-            echo "</div>";
+        } catch (PDOException $e) {
+            gerer_exceptions($e);
         }
     }
-
-    // Fermeture de la connexion à la base de données
-    mysqli_close($connexion);
     ?>
+
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         <div>
-            <label for="inscription_pseudo">Pseudo :</label><br>
-            <input type="text" id="inscription_pseudo" name="inscription_pseudo" value="<?php echo isset($_POST['inscription_pseudo']) ? $_POST['inscription_pseudo'] : ''; ?>" required minlength="2" maxlength="255"><br>
+            <label for="connexion_pseudo">Pseudo :</label><br>
+            <input type="text" id="connexion_pseudo" name="connexion_pseudo" required minlength="2" maxlength="255"><br>
         </div>
         <div>
-            <label for="inscription_email">Email :</label><br>
-            <input type="email" id="inscription_email" name="inscription_email" value="<?php echo isset($_POST['inscription_email']) ? $_POST['inscription_email'] : ''; ?>" required><br>
+            <label for="connexion_motDePasse">Mot de passe :</label><br>
+            <input type="password" id="connexion_motDePasse" name="connexion_motDePasse" required minlength="8" maxlength="72"><br>
         </div>
-        <div>
-            <label for="inscription_motDePasse">Mot de passe :</label><br>
-            <input type="password" id="inscription_motDePasse" name="inscription_motDePasse" required minlength="8" maxlength="72"><br>
-        </div>
-        <div>
-            <label for="inscription_motDePasse_confirmation">Confirmation du mot de passe :</label><br>
-            <input type="password" id="inscription_motDePasse_confirmation" name="inscription_motDePasse_confirmation" required minlength="8" maxlength="72"><br>
-        </div>
-        <button type="submit">S'inscrire</button>
+        <button type="submit">Se connecter</button>
     </form>
 </body>
-</html> -->
+</html>
