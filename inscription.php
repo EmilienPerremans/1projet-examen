@@ -6,6 +6,10 @@
     <title>Inscription</title>
 </head>
 <body>
+<?php  // HEADER
+
+require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
+?>
     <h1>Inscription</h1>
 
     <?php
@@ -19,7 +23,7 @@
         $serveur = "localhost"; // Adresse du serveur MySQL
         $utilisateur = "root"; // Nom d'utilisateur MySQL
         $motDePasse = ""; // Mot de passe MySQL
-        $baseDeDonnees = "php_christophe"; // Nom de la base de données
+        $baseDeDonnees = "examen_php"; // Nom de la base de données
 
         // Créer une nouvelle connexion PDO
         $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);

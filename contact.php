@@ -1,9 +1,20 @@
-
-
-
-
-
 <?php
+// Paramètres de connexion à la base de données
+$host = 'localhost';
+$dbname = 'examen_php';
+$username = 'root';
+$password = '';
+
+
+  // HEADER
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
+}
+
 // Traitement du formulaire
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Initialisation du tableau pour les messages d'erreurs
@@ -47,35 +58,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $erreurs[] = "Veuillez saisir un message";
     }
 
-    // Affichage des erreurs ou envoi du formulaire
+    // Vérification de l'utilisateur dans la base de données
+    if (empty($erreurs)) {
+        try {
+            $stmt = $pdo->prepare("SELECT uti_id FROM t_utilisateur_uti WHERE uti_email = :email LIMIT 1");
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                // L'utilisateur existe, insertion du message dans la base de données
+                $stmt = $pdo->prepare("INSERT INTO t_message_msg (msg_contenu, msg_date_envoi, uti_id) VALUES (:contenu, NOW(), :uti_id)");
+                $stmt->bindParam(':contenu', $message);
+                $stmt->bindParam(':uti_id', $user['uti_id']);
+
+                if ($stmt->execute()) {
+                    echo "Message envoyé avec succès et enregistré dans la base de données.";
+                } else {
+                    $erreurs[] = "Une erreur s'est produite lors de l'enregistrement du message dans la base de données.";
+                }
+            } else {
+                $erreurs[] = "Utilisateur non trouvé. Veuillez vérifier votre adresse email.";
+            }
+        } catch (PDOException $e) {
+            $erreurs[] = "Erreur de base de données : " . $e->getMessage();
+        }
+    }
+
+    // Affichage des erreurs
     if (!empty($erreurs)) {
-        // Affichage des erreurs
         foreach ($erreurs as $erreur) {
             echo "<p>$erreur</p>";
-        }
-    } else {
-        // Envoi du formulaire
-        $destinataire = "destinataire@example.com";
-        $message = "Message: " . $message;
-        $headers = "From: " . $email . "\r\n";
-        $headers .= "Reply-To: " . $email . "\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-        if (mail($destinataire, "Nouveau message de contact", $message, $headers)) {
-            echo "E-mail envoyé avec succès.";
-        } else {
-            echo "Une erreur s'est produite lors de l'envoi de l'e-mail.";
         }
     }
 }
 ?>
 
-<?php // Ajout du header
+<?php
+// Ajout du header
 $titrePage = "Contact";
-require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php") ;
-?> 
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "header.php");
+?>
 
-<link rel="stylesheet" href="css/contacte.css"> //voir si c'est good 
+<link rel="stylesheet" href="css/contacte.css">
 <body>
     <h1>Contact</h1>
     <form method="post" action="">
@@ -96,6 +121,7 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php") ;
 </body>
 </html>
 
-<!-- <?php // Ajout du footer
-require_once (__DIR__ . DIRECTORY_SEPARATOR . "footer.php") 
-?>  -->
+<!-- <?php
+// Ajout du footer
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "footer.php");
+?> -->
