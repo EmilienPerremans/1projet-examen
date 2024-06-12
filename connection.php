@@ -71,7 +71,59 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
             <label for="connexion_motDePasse">Mot de passe :</label><br>
             <input type="password" id="connexion_motDePasse" name="connexion_motDePasse" required minlength="8" maxlength="72"><br>
         </div>
-        <button type="submit">Se connecter</button>
+       <a href="inscription.php">Pas encore inscrit ?</a>
+        <div>
+            <button type="submit">Se connecter</button>
+        </div>
     </form>
-</body>
-</html>
+
+
+    <h1>Historique des messages et informations perso</h1>
+
+
+
+    <?php
+session_start();
+
+// Fonction pour récupérer l'historique des messages d'un utilisateur
+function historique_info_utilisateur($pdo, $uti_id) {
+    $requete = $pdo->prepare("SELECT * FROM t_message_msg WHERE uti_id = ?");
+    $requete->execute([$uti_id]);
+    $messages = $requete->fetchAll(PDO::FETCH_ASSOC);
+    
+    return $messages;
+}
+
+
+    
+// Vérifier si l'utilisateur est connecté
+if ("Connexion réussie pour l'utilisateur : " . $pseudo) {
+    try {
+        // Établir la connexion à la base de données
+        $pdo = connexion_bdd();
+
+        // Récupérer l'ID de l'utilisateur connecté
+        $requete = $pdo->prepare("SELECT uti_id FROM t_utilisateur_uti WHERE uti_pseudo = ?");
+        $requete->execute([$pseudo]);
+        $utilisateur = $requete->fetch(PDO::FETCH_ASSOC);
+
+        // Récupérer l'historique des messages de l'utilisateur
+        $messages = historique_info_utilisateur($pdo, $utilisateur['uti_id']);
+
+        // Afficher l'historique des messages
+        if ($messages) {
+            echo "<h2>Historique des messages :</h2>";
+            echo "<ul>";
+            foreach ($messages as $message) {
+                echo "<li>" . $message['msg_contenu'] . "</li>";
+            }
+            echo "</ul>";
+        } else {
+            echo "Aucun message trouvé pour cet utilisateur.";
+        }
+    } catch (PDOException $e) {
+        gerer_exceptions($e);
+    }
+
+}
+?>

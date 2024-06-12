@@ -74,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if ($stmt->execute()) {
                     echo "Message envoyé avec succès et enregistré dans la base de données.";
+                    mail($email, "Message reçu", "Votre message a bien été reçu.");
                 } else {
                     $erreurs[] = "Une erreur s'est produite lors de l'enregistrement du message dans la base de données.";
                 }
