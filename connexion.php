@@ -6,40 +6,64 @@
     <title>Connexion</title>
 </head>
 <body>
-<?php
-require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
-session_start();  // Démarrer la session
+<?php  // HEADER
 
+require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
+?>
+
+<h1>Connexion</h1>
+
+<?php
+session_start();
+
+// Afficher un message d'erreur s'il y en a un
+if (isset($_SESSION['error_message'])) {
+    echo "<p style='color: red;'>" . $_SESSION['error_message'] . "</p>";
+    unset($_SESSION['error_message']);
+}
+
+// Fonction pour gérer les exceptions PDO
 function gerer_exceptions(PDOException $e) {
     echo "Erreur d'exécution de requête : " . $e->getMessage() . PHP_EOL;
 }
 
+// Fonction pour établir la connexion à la base de données
 function connexion_bdd() {
-    $serveur = "localhost"; 
-    $utilisateur = "root"; 
-    $motDePasse = ""; 
-    $baseDeDonnees = "examen_php"; 
+    $serveur = "localhost"; // Adresse du serveur MySQL
+    $utilisateur = "root"; // Nom d'utilisateur MySQL
+    $motDePasse = ""; // Mot de passe MySQL
+    $baseDeDonnees = "examen_php"; // Nom de la base de données
 
+    // Créer une nouvelle connexion PDO
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);
+
+    // Définir le mode d'erreur sur "exception"
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     return $pdo;
 }
 
+// Traitement du formulaire de connexion
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Récupérer les valeurs du formulaire
     $pseudo = htmlspecialchars($_POST['connexion_pseudo']);
     $motDePasse = $_POST['connexion_motDePasse'];
 
     try {
+        // Établir la connexion à la base de données
         $pdo = connexion_bdd();
+
+        // Requête pour vérifier les informations de connexion
         $requete = $pdo->prepare("SELECT * FROM t_utilisateur_uti WHERE uti_pseudo = ?");
         $requete->execute([$pseudo]);
         $utilisateur = $requete->fetch(PDO::FETCH_ASSOC);
 
+        // Vérifier si l'utilisateur existe et si le mot de passe correspond
         if ($utilisateur && password_verify($motDePasse, $utilisateur['uti_motdepasse'])) {
+            // Stocker les informations de l'utilisateur dans la session
             $_SESSION['pseudo'] = $pseudo;
-            $_SESSION['email'] = $utilisateur['uti_email'];
             $_SESSION['uti_id'] = $utilisateur['uti_id'];
+            $_SESSION['email'] = $utilisateur['uti_email'];
 
             header("Location: visualisation.php");
             exit();
@@ -52,7 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<h1>Connexion</h1>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
     <div>
         <label for="connexion_pseudo">Pseudo :</label><br>
@@ -67,5 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Se connecter</button>
     </div>
 </form>
+
 </body>
 </html>

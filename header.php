@@ -16,7 +16,7 @@
                 <li><a href="contact.php">Contact</a></li>
                 <li><a href="connection.php">Connexion</a></li>
                 <li><a href="inscription.php">Inscription</a></li>
-                <li><a href="historique.php">historique</a></li>
+                <li><a href="visualisation.php">historique</a></li>
             </ul>
         </nav>
     </header>
