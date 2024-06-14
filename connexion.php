@@ -47,7 +47,7 @@ function connexion_bdd() {
 // Traitement du formulaire de connexion
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Récupérer les valeurs du formulaire
-    $pseudo = htmlspecialchars($_POST['connexion_pseudo']);
+    $pseudo = $_POST['connexion_pseudo'];
     $motDePasse = $_POST['connexion_motDePasse'];
 
     try {

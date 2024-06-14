@@ -21,10 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $erreurs = [];
 
     // Récupération des données du formulaire et nettoyage
-    $nom = htmlentities($_POST["nom"]);
-    $prenom = htmlentities($_POST["prenom"]);
-    $email = htmlentities($_POST["email"]);
-    $message = htmlentities($_POST["message"]);
+    $nom = $_POST["nom"];
+    $prenom = $_POST["prenom"];
+    $email = $_POST["email"];
+    $message = $_POST["message"];
 
     // Validation du nom
     if (!empty($nom)) {
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($user) {
                 // L'utilisateur existe, insertion du message dans la base de données
-                $stmt = $pdo->prepare("INSERT INTO t_message_msg (msg_contenu, msg_date_envoi, uti_id) VALUES (:contenu, NOW(), :uti_id)");
+                $stmt = $pdo->prepare("INSERT INTO t_message_msg (msg_contenu, msg_date, uti_id) VALUES (:contenu, NOW(), :uti_id)");
                 $stmt->bindParam(':contenu', $message);
                 $stmt->bindParam(':uti_id', $user['uti_id']);
 
