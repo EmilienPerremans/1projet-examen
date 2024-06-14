@@ -1,6 +1,6 @@
 <?php
 // Paramètres de connexion à la base de données
-$host = 'ftpupload.net';
+$host = 'sql200.infinityfree.com';
 $dbname = 'if0_36726361_examen_php';
 $username = 'if0_36726361';
 $password = 'F1qv235NwO';
