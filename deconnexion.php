@@ -8,6 +8,7 @@ if (isset($pdo)) {
 
 // Supprimer toutes les variables de session
 session_unset();
+setcookie("pseudo", "", time() - 3600, "/");
 
 // Détruire la session
 session_destroy();

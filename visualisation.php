@@ -21,10 +21,10 @@ function gerer_exceptions(PDOException $e) {
 }
 
 function connexion_bdd() {
-    $serveur = "localhost"; 
-    $utilisateur = "root"; 
-    $motDePasse = ""; 
-    $baseDeDonnees = "examen_php"; 
+    $serveur = "sql200.infinityfree.com"; 
+    $utilisateur = "if0_36726361"; 
+    $motDePasse = "F1qv235NwO"; 
+    $baseDeDonnees = "if0_36726361_examen_php"; 
 
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

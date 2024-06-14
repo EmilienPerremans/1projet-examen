@@ -29,10 +29,10 @@ function gerer_exceptions(PDOException $e) {
 
 // Fonction pour établir la connexion à la base de données
 function connexion_bdd() {
-    $serveur = "localhost"; // Adresse du serveur MySQL
-    $utilisateur = "root"; // Nom d'utilisateur MySQL
-    $motDePasse = ""; // Mot de passe MySQL
-    $baseDeDonnees = "examen_php"; // Nom de la base de données
+    $serveur = "sql200.infinityfree.com"; 
+    $utilisateur = "if0_36726361"; 
+    $motDePasse = "F1qv235NwO"; 
+    $baseDeDonnees = "if0_36726361_examen_php"; 
 
     // Créer une nouvelle connexion PDO
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);
@@ -61,6 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Vérifier si l'utilisateur existe et si le mot de passe correspond
         if ($utilisateur && password_verify($motDePasse, $utilisateur['uti_motdepasse'])) {
             // Stocker les informations de l'utilisateur dans la session
+            setcookie("pseudo", $pseudo, time() + 3600, "/");
+
             $_SESSION['pseudo'] = $pseudo;
             $_SESSION['uti_id'] = $utilisateur['uti_id'];
             $_SESSION['email'] = $utilisateur['uti_email'];

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/inscription.css">
     <title>Inscription</title>
 </head>
 <body>
@@ -20,10 +21,11 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
 
     // Fonction pour établir la connexion à la base de données
     function connexion_bdd() {
-        $serveur = "localhost"; // Adresse du serveur MySQL
-        $utilisateur = "root"; // Nom d'utilisateur MySQL
-        $motDePasse = ""; // Mot de passe MySQL
-        $baseDeDonnees = "examen_php"; // Nom de la base de données
+        $serveur = "sql200.infinityfree.com"; 
+        $utilisateur = "if0_36726361"; 
+        $motDePasse = "F1qv235NwO"; 
+        $baseDeDonnees = "if0_36726361_examen_php"; 
+
 
         // Créer une nouvelle connexion PDO
         $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8", $utilisateur, $motDePasse);
@@ -51,13 +53,10 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
                 $pdo = connexion_bdd();
 
                 // Préparer la requête d'insertion avec des paramètres sécurisés
-                $requete = $pdo->prepare("INSERT INTO t_utilisateur_uti (uti_pseudo, uti_email, uti_motdepasse, uti_code_activation) VALUES (?, ?, ?, ?)");
-
-                // Générer un code d'activation aléatoire
-                $code_activation = rand(10000, 99999);
+                $requete = $pdo->prepare("INSERT INTO t_utilisateur_uti (uti_pseudo, uti_email, uti_motdepasse) VALUES (?, ?, ?)");
 
                 // Exécuter la requête en passant les valeurs en paramètres
-                $requete->execute([$pseudo, $email, password_hash($motDePasse, PASSWORD_DEFAULT), $code_activation]);
+                $requete->execute([$pseudo, $email, password_hash($motDePasse, PASSWORD_DEFAULT)]);
 
                 echo "Inscription réussie !";
             } catch (PDOException $e) {

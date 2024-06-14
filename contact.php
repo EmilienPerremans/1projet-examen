@@ -1,9 +1,9 @@
 <?php
 // Paramètres de connexion à la base de données
-$host = 'localhost';
-$dbname = 'examen_php';
-$username = 'root';
-$password = '';
+$host = 'ftpupload.net';
+$dbname = 'if0_36726361_examen_php';
+$username = 'if0_36726361';
+$password = 'F1qv235NwO';
 
 
   // HEADER
