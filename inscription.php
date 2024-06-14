@@ -87,3 +87,9 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . "header.php");
     </form>
 </body>
 </html>
+
+<!-- <?php
+// Ajout du footer
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "footer.php");
+?> -->
+
